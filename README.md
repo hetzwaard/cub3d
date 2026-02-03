@@ -2,7 +2,7 @@
 
 ### Bunny Hop Maze Runner
 
-GO! is a fast-paced bunny hop game built on the 42 **cub3d** project. You explore compact arenas in first person, chaining jumps to build speed, threading tight corners, and reaching the exit as fast as possible.
+GO! is a fast-paced bunny hop game built with the [MLX42](https://github.com/codam-coding-college/MLX42) library. You explore compact arenas in first person, chaining jumps to build speed, threading tight corners, and reaching the exit as fast as possible.
 
 The goal: learn raycasting, textures, and real-time input while keeping the code clean and modular.
 
@@ -27,7 +27,7 @@ The goal: learn raycasting, textures, and real-time input while keeping the code
 - **Move:** WASD
 - **Look:** Mouse
 - **Jump:** Space
-- **Run:** Shift
+- **Run:** Left-shift
 - **Exit:** Esc
 
 ---
@@ -95,4 +95,4 @@ This project uses MLX42 for rendering and input handling.
 Built for the 42 curriculum. GO! is a bunny hop twist on cub3d.
 
 ---
-Enjoy the speed. 🐇
+Enjoy!
