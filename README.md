@@ -1,98 +1,108 @@
-# GO! 🐰💨
+# BunnyHoppy
 
-### Bunny Hop Maze Runner
+BunnyHoppy is a Cub3D-based first-person game written in C with MLX42.
+It includes native and WebAssembly builds, bonus gameplay systems (keys, doors,
+checkpoints, lava), and custom pixel textures.
 
-GO! is a fast-paced bunny hop game built with the [MLX42](https://github.com/codam-coding-college/MLX42) library. You explore compact arenas in first person, chaining jumps to build speed, threading tight corners, and reaching the exit as fast as possible.
+## What It Includes
 
-The goal: learn raycasting, textures, and real-time input while keeping the code clean and modular.
+- Ray-casting renderer (walls + floor/ceiling)
+- Strict `.cub` parsing and map validation
+- Bonus mode systems: keys, doors, minimap, sprites, checkpoints
+- Native build (`cub3D_bonus`) and browser build (`web/` via Emscripten)
 
----
-## Features
-- Classic raycasting engine (walls, floor/ceiling shading)
-- Textured walls using XPM assets
-- Smooth movement + rotation
-- Bunny hop style momentum (jump timing + strafing)
-- Map parsing with strict format validation
-- Clean error reporting and safe cleanup
-
----
-## Bonus Implemented
-- Doors and keys system
-- Minimap with FOV
-- Sprite rendering pipeline
-- Extra post-processing / shading effects
-
----
 ## Controls
-- **Move:** WASD
-- **Look:** Mouse
-- **Jump:** Space
-- **Run:** Left-shift
-- **Exit:** Esc
 
----
-## Architecture Overview
+- Move: `WASD`
+- Look: `Mouse` and `Arrow Keys`
+- Jump: `Space`
+- Run: `Shift`
+- Open door: `E`
+- Toggle minimap: `M`
+- Exit: `Esc`
+
+## Project Layout
+
+```text
+include/                headers (`cub3d.h`)
+src/parser/             config/map parser and validation
+src/game/               core loop, movement, ray cast, draw pipeline
+src/bonus/              doors, keys, minimap, sprites, checkpoint logic
+assets/                 XPM42 textures
+maps/                   `.cub` maps (default map: `maps/default.cub`)
+web/                    browser shell (`index.html`, docs, generated wasm/js/data)
 ```
-include/            Public headers (main: cub3d.h)
-include/libft/      Custom libc-like helper library (libft)
-src/
-	parser/           .cub parsing, validation, map build
-	game/             core loop, input, movement, raycasting
-	bonus/            doors, keys, sprites, minimap, extras
-	error/            error helpers and messages
-assets/             textures and sprites (XPM)
-maps/               sample .cub maps
-```
 
-Flow:
-1. Parse .cub file (textures, colors, map)
-2. Validate map + player start
-3. Initialize MLX + textures
-4. Game loop (input → move → raycast → draw)
-5. Cleanup and exit
+## Ray Casting Logic (C)
 
----
-## Key Modules
-- Parsing: identifiers, map checks, color parsing
-- Rendering: raycasting, wall draw, floor/ceiling draw, shading
-- Movement: collision checks, jump, rotate, time-based updates
-- Bonus: doors/keys, sprites, minimap
-- Cleanup: safe free routines and error path handling
+The renderer casts one ray per screen column.
 
----
-## Building
-Prerequisites:
-- `make` and a POSIX toolchain
+1. Build a camera ray from player direction + camera plane.
+2. Use DDA (grid stepping) to walk the map until hitting a wall tile.
+3. Compute perpendicular wall distance (avoids fish-eye distortion).
+4. Convert distance into wall strip height on screen.
+5. Sample texture `x/y` coordinates and draw the vertical strip.
+6. Draw floor/ceiling and apply shading.
 
-Build:
+Core files to read:
+
+- `src/game/fn_game_ray.c`
+- `src/game/fn_game_wall_loop.c`
+- `src/game/fn_game_wall_draw.c`
+- `src/game/fn_game_floor_draw.c`
+
+## Native Build
+
 ```bash
-make
+make bonus
+./cub3D_bonus maps/default.cub
 ```
 
-Rebuild from scratch:
+## WebAssembly Build
+
+Install/activate emsdk once per shell session:
+
 ```bash
-make re
+source ~/emsdk/emsdk_env.sh
 ```
 
-Clean objects / full cleanup:
+Build and run locally:
+
 ```bash
-make clean
-make fclean
+make -f Makefile.web
+make -f Makefile.web serve
 ```
 
----
-## Running
+Open:
+
+- `http://localhost:8000/index.html`
+
+## Deploy To `mahmutkilic.nl/bunnyhoppy`
+
+If your website is in a different repo, copy generated web files into that repo
+under `bunnyhoppy/` and push.
+
+From this repo:
+
 ```bash
-./cub3d maps/test.cub
+make -f Makefile.web
 ```
 
----
-## Notes
-This project uses MLX42 for rendering and input handling.
+In your website repo:
 
----
-## Credits
-Built for the 42 curriculum. GO! is a bunny hop twist on cub3d.
+```bash
+mkdir -p bunnyhoppy
+cp /path/to/cub3d/web/index.html bunnyhoppy/
+cp /path/to/cub3d/web/cub3d.js bunnyhoppy/
+cp /path/to/cub3d/web/cub3d.wasm bunnyhoppy/
+cp /path/to/cub3d/web/cub3d.data bunnyhoppy/
+cp /path/to/cub3d/web/coi-serviceworker.js bunnyhoppy/
 
----
-Enjoy!
+git add bunnyhoppy
+git commit -m "Deploy BunnyHoppy"
+git push
+```
+
+Then visit:
+
+- `https://mahmutkilic.nl/bunnyhoppy/`

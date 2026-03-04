@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<title>BunnyHoppy! - bunnyhoppy.com</title>
+	<title>BunnyHoppy - Web Build</title>
 	<style>
 		:root {
 			color-scheme: dark;
@@ -24,12 +24,17 @@
 
 		h1 {
 			margin: 0 0 8px;
-			font-size: 1.5rem;
+			font-size: 1.6rem;
+		}
+
+		h2 {
+			margin: 0 0 8px;
+			font-size: 1.1rem;
 		}
 
 		p {
 			margin: 0 0 12px;
-			opacity: 0.9;
+			opacity: 0.92;
 		}
 
 		.panel {
@@ -40,7 +45,8 @@
 			flex-wrap: wrap;
 		}
 
-		.panel code {
+		.panel code,
+		.readme code {
 			background: #161b22;
 			padding: 2px 6px;
 			border-radius: 6px;
@@ -60,23 +66,110 @@
 			border-radius: 10px;
 			background: #000;
 		}
+
+		.readme {
+			margin-top: 16px;
+			padding: 14px;
+			border: 1px solid #30363d;
+			border-radius: 10px;
+			background: #0f1520;
+		}
+
+		details {
+			border: 1px solid #2a3544;
+			border-radius: 8px;
+			padding: 10px;
+			background: #0d1420;
+			margin-bottom: 10px;
+		}
+
+		details:last-child {
+			margin-bottom: 0;
+		}
+
+		summary {
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		.readme ul,
+		.readme ol {
+			margin: 8px 0 0 18px;
+			padding: 0;
+		}
+
+		.readme li {
+			margin-bottom: 6px;
+		}
+
+		pre {
+			margin: 10px 0 0;
+			padding: 10px;
+			background: #0b111a;
+			border: 1px solid #273445;
+			border-radius: 8px;
+			overflow-x: auto;
+			font-size: 0.82rem;
+		}
 	</style>
 </head>
 <body>
 	<main>
-		<h1>BunnyHoppy! (Cub3D) WebAssembly Build</h1>
-		<p>Map: <code>/maps/default.cub</code> (fixed).</p>
+		<h1>BunnyHoppy (Cub3D) - WebAssembly Build</h1>
+		<p>Map: <code>/maps/default.cub</code> (fixed startup map).</p>
 		<div class="panel">
 			<span>Move: <code>WASD</code></span>
-			<span>Look: <code>Mouse and Arrow Keys</code></span>
+			<span>Look: <code>Mouse + Arrow Keys</code></span>
 			<span>Open doors: <code>E</code></span>
 			<span>Jump: <code>Space</code></span>
-			<span>Show Map: <code>M</code></span>
+			<span>Show map: <code>M</code></span>
 			<span>Run: <code>Shift</code></span>
 			<span>Exit: <code>Esc</code></span>
 		</div>
 		<div id="status">Loading WebAssembly module...</div>
 		<canvas id="gamecanvas" width="1280" height="720"></canvas>
+
+		<section class="readme">
+			<h2>README Notes</h2>
+			<p>This page runs the C ray-casting engine compiled with Emscripten.</p>
+
+			<details open>
+				<summary>Ray Casting Logic (C)</summary>
+				<ol>
+					<li>For each screen column, build a ray from player direction and camera plane.</li>
+					<li>Run DDA on the map grid until the ray hits a wall tile.</li>
+					<li>Use perpendicular distance to compute wall slice height (no fish-eye).</li>
+					<li>Sample texture coordinates and draw one vertical stripe.</li>
+					<li>Draw floor and ceiling and apply distance-based shading.</li>
+				</ol>
+				<pre><code>// simplified render pass
+for (int x = 0; x < render_w; ++x) {
+    ray_setup(&ray, player, camera, x);
+    dda_cast(&ray, map);
+    wall_project(&ray, render_h);
+    wall_draw_stripe(&ray, x);
+    floor_draw_column(&ray, x);
+}</code></pre>
+			</details>
+
+			<details>
+				<summary>Bonus Logic Used Here</summary>
+				<ul>
+					<li>Bonus mode is always enabled for this web build.</li>
+					<li>Map is fixed to <code>/maps/default.cub</code>.</li>
+					<li>Keys, doors, minimap, sprites, lava, and checkpoints are active.</li>
+				</ul>
+			</details>
+
+			<details>
+				<summary>Build And Deploy</summary>
+				<pre><code>source ~/emsdk/emsdk_env.sh
+make -f Makefile.web
+make -f Makefile.web serve</code></pre>
+				<p>To publish at <code>mahmutkilic.nl/bunnyhoppy</code>, copy generated files
+				from <code>web/</code> into your website repo under <code>bunnyhoppy/</code>, then commit and push.</p>
+			</details>
+		</section>
 	</main>
 
 	<script src="coi-serviceworker.js"></script>
