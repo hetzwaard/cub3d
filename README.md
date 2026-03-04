@@ -1,15 +1,16 @@
-# BunnyHoppy
+# BunnyHoppy (Cub3D)
 
-BunnyHoppy is a Cub3D-based first-person game written in C with MLX42.
-It includes native and WebAssembly builds, bonus gameplay systems (keys, doors,
-checkpoints, lava), and custom pixel textures.
+BunnyHoppy is a Cub3D-based first-person game written in C using MLX42.
+The project focuses on ray casting, map parsing, movement/collision, and
+bonus gameplay systems implemented in a clean modular structure.
 
-## What It Includes
+## Features
 
-- Ray-casting renderer (walls + floor/ceiling)
-- Strict `.cub` parsing and map validation
-- Bonus mode systems: keys, doors, minimap, sprites, checkpoints
-- Native build (`cub3D_bonus`) and browser build (`web/` via Emscripten)
+- Ray-casting renderer (walls, floor, ceiling, shading)
+- Strict `.cub` parser and map validation
+- Textured walls (XPM42 assets)
+- Player movement, jump, and collision handling
+- Bonus systems: keys, doors, minimap, sprites, checkpoints, lava
 
 ## Controls
 
@@ -28,81 +29,48 @@ include/                headers (`cub3d.h`)
 src/parser/             config/map parser and validation
 src/game/               core loop, movement, ray cast, draw pipeline
 src/bonus/              doors, keys, minimap, sprites, checkpoint logic
-assets/                 XPM42 textures
-maps/                   `.cub` maps (default map: `maps/default.cub`)
-web/                    browser shell (`index.html`, docs, generated wasm/js/data)
+src/error/              error handling helpers
+assets/                 XPM42 textures and sprites
+maps/                   `.cub` maps (default: `maps/default.cub`)
 ```
 
 ## Ray Casting Logic (C)
 
-The renderer casts one ray per screen column.
+The renderer casts one ray per screen column:
 
-1. Build a camera ray from player direction + camera plane.
-2. Use DDA (grid stepping) to walk the map until hitting a wall tile.
-3. Compute perpendicular wall distance (avoids fish-eye distortion).
-4. Convert distance into wall strip height on screen.
-5. Sample texture `x/y` coordinates and draw the vertical strip.
-6. Draw floor/ceiling and apply shading.
+1. Build camera ray from player direction + camera plane.
+2. Use DDA grid stepping until a wall tile is hit.
+3. Compute perpendicular distance to avoid fish-eye distortion.
+4. Project wall slice height on screen.
+5. Sample texture coordinates and draw vertical stripe.
+6. Draw floor/ceiling and apply distance-based shading.
 
-Core files to read:
+Core files:
 
 - `src/game/fn_game_ray.c`
 - `src/game/fn_game_wall_loop.c`
 - `src/game/fn_game_wall_draw.c`
 - `src/game/fn_game_floor_draw.c`
 
-## Native Build
+## Build
+
+Mandatory build:
+
+```bash
+make
+./cub3D maps/wall.cub
+```
+
+Bonus build:
 
 ```bash
 make bonus
 ./cub3D_bonus maps/default.cub
 ```
 
-## WebAssembly Build
-
-Install/activate emsdk once per shell session:
+## Cleanup
 
 ```bash
-source ~/emsdk/emsdk_env.sh
+make clean
+make fclean
 ```
-
-Build and run locally:
-
-```bash
-make -f Makefile.web
-make -f Makefile.web serve
-```
-
-Open:
-
-- `http://localhost:8000/index.html`
-
-## Deploy To `mahmutkilic.nl/bunnyhoppy`
-
-If your website is in a different repo, copy generated web files into that repo
-under `bunnyhoppy/` and push.
-
-From this repo:
-
-```bash
-make -f Makefile.web
-```
-
-In your website repo:
-
-```bash
-mkdir -p bunnyhoppy
-cp /path/to/cub3d/web/index.html bunnyhoppy/
-cp /path/to/cub3d/web/cub3d.js bunnyhoppy/
-cp /path/to/cub3d/web/cub3d.wasm bunnyhoppy/
-cp /path/to/cub3d/web/cub3d.data bunnyhoppy/
-cp /path/to/cub3d/web/coi-serviceworker.js bunnyhoppy/
-
-git add bunnyhoppy
-git commit -m "Deploy BunnyHoppy"
-git push
-```
-
-Then visit:
-
-- `https://mahmutkilic.nl/bunnyhoppy/`
