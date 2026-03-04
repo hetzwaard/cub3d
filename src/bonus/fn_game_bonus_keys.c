@@ -20,14 +20,60 @@ static uint32_t	bonus_key_color(xpm_t *xpm, int x, int y)
 	return ((p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]);
 }
 
+static int	bonus_row_len(t_app *app, int y)
+{
+	if (app->map->row_len)
+		return (app->map->row_len[y]);
+	return ((int)ft_strlen(app->map->map_2d[y]));
+}
+
+static void	bonus_try_set_checkpoint(t_app *app, int key_x, int key_y)
+{
+	t_game		*g;
+	double		best_dist;
+	double		dist_x;
+	double		dist_y;
+	double		dist;
+	int			x;
+	int			y;
+
+	g = app->game;
+	best_dist = HUGE_DIST;
+	y = -1;
+	while (++y < app->map->height)
+	{
+		if (app->map->map_2d[y] == NULL)
+			continue ;
+		x = -1;
+		while (++x < bonus_row_len(app, y))
+		{
+			if (app->map->map_2d[y][x] != 'C')
+				continue ;
+			dist_x = ((double)x + 0.5) - ((double)key_x + 0.5);
+			dist_y = ((double)y + 0.5) - ((double)key_y + 0.5);
+			dist = dist_x * dist_x + dist_y * dist_y;
+			if (dist < best_dist)
+			{
+				best_dist = dist;
+				g->respawn_x = (double)x + 0.5;
+				g->respawn_y = (double)y + 0.5;
+			}
+		}
+	}
+	if (best_dist < HUGE_DIST)
+		g->checkpoint_armed = true;
+}
+
 void	bonus_update_keys(t_app *app)
 {
 	t_player	*p;
+	t_game		*g;
 	int			mx;
 	int			my;
 
 	if (app == NULL || app->game == NULL || is_bonus_mode() == false)
 		return ;
+	g = app->game;
 	p = &app->game->player;
 	if (p->x < 0.0 || p->y < 0.0)
 		return ;
@@ -40,7 +86,8 @@ void	bonus_update_keys(t_app *app)
 	if (app->map->map_2d[my] && app->map->map_2d[my][mx] == 'K')
 	{
 		app->map->map_2d[my][mx] = '0';
-		app->game->keys++;
+		g->keys++;
+		bonus_try_set_checkpoint(app, mx, my);
 	}
 }
 

@@ -1,21 +1,20 @@
 !XPM42
-16 16 3 1 c
-. #00000000
-x #FFFFFF00
-z #FFFFFF00
-zzzzzzzzzzzzzzzz
+16 16 2 1 c
+x #5500FFFF
+. #FF0d1117
+xxxxxxxxxxxxxxxx
 ................
 ................
-zzzzzzzzzzzzzzzz
+xxxxxxxxxxxxxxxx
 ................
-.xxxxxx..xxxxxx.
-.x....x..x....x.
-.x....x.......x.
-.x....x..xxx..x.
-.x....x..x....x.
-.xxxxxx..x.xxxx.
+..xx..xx..xx..xx
+.xx..xx..xx..xx.
+xx..xx..xx..xx..
+xx..xx..xx..xx..
+.xx..xx..xx..xx.
+..xx..xx..xx..xx
 ................
-zzzzzzzzzzzzzzzz
+xxxxxxxxxxxxxxxx
 ................
 ................
-zzzzzzzzzzzzzzzz
+xxxxxxxxxxxxxxxx

@@ -6,7 +6,7 @@
 /*   By: W2Wizard <main@w2wizard.dev>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/12/28 00:24:30 by W2Wizard      #+#    #+#                 */
-/*   Updated: 2023/06/08 18:16:19 by XEDGit        ########   odam.nl         */
+/*   Updated: 2026/03/03 23:02:11 by mahkilic      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,9 @@ static bool mlx_init_render(mlx_t* mlx)
     glfwMakeContextCurrent(mlx->window);
     glfwSetFramebufferSizeCallback(mlx->window, framebuffer_callback);
     glfwSetWindowUserPointer(mlx->window, mlx);
+	#ifndef EMSCRIPTEN
     glfwSwapInterval(MLX_SWAP_INTERVAL);
+	#endif
 
     // Load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

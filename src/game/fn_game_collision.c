@@ -18,7 +18,8 @@ static int	game_bonus_cell(char cell)
 		return (-1);
 	if (cell == 'D')
 		return (1);
-	if (cell == 'd' || cell == '2' || cell == 'L' || cell == 'K')
+	if (cell == 'd' || cell == '2'
+		|| cell == 'L' || cell == 'K' || cell == 'C')
 		return (0);
 	return (-1);
 }

@@ -36,8 +36,32 @@ static bool	game_is_lava(t_app *app)
 
 static void	game_lava_reset(t_app *app)
 {
+	t_game	*game;
+	double	respawn_x;
+	double	respawn_y;
+	double	last_dir;
+	double	last_pitch;
+	bool	checkpoint_armed;
+
 	if (game_is_lava(app))
+	{
+		game = app->game;
+		respawn_x = game->respawn_x;
+		respawn_y = game->respawn_y;
+		last_dir = game->player.dir;
+		last_pitch = game->player.pitch;
+		checkpoint_armed = game->checkpoint_armed;
 		game_init_player(app);
+		game->respawn_x = respawn_x;
+		game->respawn_y = respawn_y;
+		game->checkpoint_armed = checkpoint_armed;
+		game->player.x = game->respawn_x;
+		game->player.y = game->respawn_y;
+		game->player.dir = last_dir;
+		game->player.pitch = last_pitch;
+		game_wrap_angle(&game->player.dir);
+		game_clamp_pitch(&game->player.pitch);
+	}
 }
 
 void	game_jump_start(t_app *app)

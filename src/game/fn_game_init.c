@@ -20,6 +20,9 @@ void	game_init_player(t_app *app)
 	game = app->game;
 	game->player.x = app->map->start_pos.x + 0.5;
 	game->player.y = app->map->start_pos.y + 0.5;
+	game->respawn_x = game->player.x;
+	game->respawn_y = game->player.y;
+	game->checkpoint_armed = false;
 	start = app->map->map_2d[app->map->start_pos.y][app->map->start_pos.x];
 	if (start == 'N')
 		game->player.dir = GAME_PI * 1.5;

@@ -6,7 +6,7 @@
 /*   By: selcyilm <selcyilm@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/02/21 23:23:46 by selcyilm      #+#    #+#                 */
-/*   Updated: 2026/02/03 14:58:27 by mahkilic      ########   odam.nl         */
+/*   Updated: 2026/03/04 00:20:21 by mahkilic      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,14 @@
 # define GAME_JUMP_VEL 3.0
 # define GAME_JUMP_GRAVITY 10.0
 # define GAME_PITCH_MAX 1.0471975511965976
-# define GAME_RENDER_CUTOFF_W 1280
-# define GAME_RENDER_CUTOFF_H 720
-# define GAME_RENDER_SCALE_HI 0.5
-# define GAME_RENDER_SCALE_LO 0.5
+# define GAME_RENDER_CUTOFF_W 1920
+# define GAME_RENDER_CUTOFF_H 1080
+# define GAME_RENDER_SCALE_HI 0.75
+# define GAME_RENDER_SCALE_LO 0.75
 # define GAME_TARGET_FPS 60.0
 # define GAME_BLUR_NUM 3
-# define GAME_BLUR_DEN 4
-# define GAME_ENABLE_BLUR 0
+# define GAME_BLUR_DEN 3
+# define GAME_ENABLE_BLUR 1
 # define GAME_ENABLE_MINIMAP 0
 
 // HUD and Textures //
@@ -83,6 +83,7 @@
 # define MINI_SPRITE 0x22DDFFFF
 # define MINI_LAVA 0xCC3300FF
 # define MINI_KEY 0xFFD700FF
+# define MINI_CHECKPOINT 0xFF8C00FF
 # define MINI_TILE 20
 # define MINI_MARGIN 6
 # define MINI_RADIUS 4
@@ -222,6 +223,9 @@ typedef struct s_game
 	bool		minimap_enabled;
 	bool		blur_enabled;
 	int			keys;
+	double		respawn_x;
+	double		respawn_y;
+	bool		checkpoint_armed;
 	bool		*door_unlocked;
 	xpm_t		*key_xpm;
 	t_player	player;

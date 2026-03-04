@@ -14,6 +14,7 @@ NAME = cub3D
 NAME_BONUS = cub3D_bonus
 CFLAGS = -Wall -Werror -Wextra -flto -O3 -ffast-math -Wunreachable-code -Ofast
 CC = cc
+.SUFFIXES:
 LIBMLX	= ./include/MLX42
 MLX42	= ./include/MLX42/build/libmlx42.a
 LIBFT	= ./include/libft/libft.a

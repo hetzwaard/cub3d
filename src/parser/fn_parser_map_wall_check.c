@@ -18,7 +18,7 @@ static bool	is_valid_char(char c)
 		|| c == 'N' || c == 'E' || c == 'S')
 		return (true);
 	if (is_bonus_mode() && (c == 'D' || c == 'd'
-			|| c == 'L' || c == 'K'))
+			|| c == 'L' || c == 'K' || c == 'C'))
 		return (true);
 	return (false);
 }
@@ -60,7 +60,8 @@ bool	fn_map_wall_check(char **map)
 				|| (is_bonus_mode()
 					&& (map[i][j] == 'd'
 						|| map[i][j] == 'L'
-						|| map[i][j] == 'K')))
+						|| map[i][j] == 'K'
+						|| map[i][j] == 'C')))
 			{
 				if (check_neighbor(map, i, j))
 					return (fn_error(ERR_INVALID_WALL), false);

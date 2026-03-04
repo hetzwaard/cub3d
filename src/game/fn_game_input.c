@@ -6,7 +6,7 @@
 /*   By: mahkilic <mahkilic@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2026/02/02 16:31:26 by mahkilic      #+#    #+#                 */
-/*   Updated: 2026/02/02 16:31:28 by mahkilic      ########   odam.nl         */
+/*   Updated: 2026/03/03 23:15:16 by mahkilic      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,35 +59,93 @@ void	game_handle_keys(t_app *app)
 	game_apply_movement(app, fwd, right, speed);
 }
 
-static bool	game_mouse_delta(t_game *g, double *dx, double *dy)
+static bool	game_mouse_delta_center(t_game *g, double *dx, double *dy)
+{
+	int32_t	mx;
+	int32_t	my;
+	double	cx;
+	double	cy;
+	double	max_dx;
+	double	max_dy;
+
+	mlx_get_mouse_pos(g->mlx, &mx, &my);
+	cx = g->mlx->width / 2.0;
+	cy = g->mlx->height / 2.0;
+	*dx = (double)mx - cx;
+	*dy = (double)my - cy;
+	max_dx = (double)g->mlx->width * 0.45;
+	max_dy = (double)g->mlx->height * 0.45;
+	if (fabs(*dx) > max_dx || fabs(*dy) > max_dy)
+		return (false);
+	if (fabs(*dx) < 1.0)
+		*dx = 0.0;
+	if (fabs(*dy) < 1.0)
+		*dy = 0.0;
+	return (!(*dx == 0.0 && *dy == 0.0));
+}
+
+#ifdef __EMSCRIPTEN__
+static bool	game_mouse_delta_relative(t_game *g, double *dx, double *dy)
 {
 	int32_t	mx;
 	int32_t	my;
 
 	mlx_get_mouse_pos(g->mlx, &mx, &my);
-	*dx = (double)mx - (g->win_w / 2.0);
-	*dy = (double)my - (g->win_h / 2.0);
+	*dx = (double)mx - g->mouse.last_x;
+	*dy = (double)my - g->mouse.last_y;
+	g->mouse.last_x = (double)mx;
+	g->mouse.last_y = (double)my;
+	if (fabs(*dx) > 300.0 || fabs(*dy) > 300.0)
+		return (false);
+	if (fabs(*dx) < 0.01)
+		*dx = 0.0;
+	if (fabs(*dy) < 0.01)
+		*dy = 0.0;
 	return (!(*dx == 0.0 && *dy == 0.0));
 }
+#endif
 
 void	game_handle_mouse(t_app *app)
 {
 	t_game	*g;
 	double	dx;
 	double	dy;
+	double	sens;
+	int32_t	cx;
+	int32_t	cy;
 
 	g = app->game;
+	cx = g->mlx->width / 2;
+	cy = g->mlx->height / 2;
+	sens = g->mouse_sens;
 	if (g->mouse.active == false)
 	{
-		mlx_set_mouse_pos(g->mlx, g->win_w / 2, g->win_h / 2);
+#ifdef __EMSCRIPTEN__
+		mlx_get_mouse_pos(g->mlx, &cx, &cy);
+		g->mouse.last_x = (double)cx;
+		g->mouse.last_y = (double)cy;
+#else
+		mlx_set_mouse_pos(g->mlx, cx, cy);
+#endif
 		g->mouse.active = true;
 		return ;
 	}
-	if (game_mouse_delta(g, &dx, &dy) == false)
+#ifdef __EMSCRIPTEN__
+	if (game_mouse_delta_relative(g, &dx, &dy) == false)
 		return ;
-	g->player.dir += dx * g->mouse_sens;
-	g->player.pitch -= dy * g->mouse_sens;
+	sens *= 0.90;
+#else
+	if (game_mouse_delta_center(g, &dx, &dy) == false)
+	{
+		mlx_set_mouse_pos(g->mlx, cx, cy);
+		return ;
+	}
+#endif
+	g->player.dir += dx * sens;
+	g->player.pitch -= dy * sens;
 	game_wrap_angle(&g->player.dir);
 	game_clamp_pitch(&g->player.pitch);
-	mlx_set_mouse_pos(g->mlx, g->win_w / 2, g->win_h / 2);
+#ifndef __EMSCRIPTEN__
+	mlx_set_mouse_pos(g->mlx, cx, cy);
+#endif
 }

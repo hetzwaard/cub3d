@@ -37,7 +37,7 @@ void	line_setup(t_map *map, char *line)
 		else if (ft_strchr("NSWE", line[i]) != NULL)
 			map->player_count++;
 		else if (is_bonus_mode()
-			&& ft_strchr("DdLK", line[i]) != NULL)
+			&& ft_strchr("DdLKC", line[i]) != NULL)
 			line_bonus_setup(map, line[i]);
 		else
 			map->invalid_char = true;

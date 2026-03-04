@@ -47,6 +47,8 @@ uint32_t	bonus_minimap_color(char c)
 		return (MINI_LAVA);
 	if (c == 'K')
 		return (MINI_KEY);
+	if (c == 'C')
+		return (MINI_CHECKPOINT);
 	return (MINI_EMPTY);
 }
 

@@ -1,0 +1,100 @@
+.RECIPEPREFIX := >
+.SUFFIXES:
+
+NAME_WEB := cub3d.js
+CC := emcc
+EMCMAKE := emcmake
+CFLAGS := -O2 -Wall -Wextra
+
+LIBMLX := ./include/MLX42
+MLX42_BUILD := $(LIBMLX)/build_web
+MLX42 := $(MLX42_BUILD)/libmlx42.a
+
+LIBFT_DIR := ./include/libft
+LIBFT_NAME := libft_web.a
+LIBFT_OBJDIR := objects_web
+LIBFT := $(LIBFT_DIR)/$(LIBFT_NAME)
+
+HEADERS := -I ./include/libft/ -I ./include -I $(LIBMLX)/include/ -I $(LIBMLX)/include/MLX42/
+
+SRC_DIR := src
+OBJ_DIR := obj_web
+WEB_DIR := web
+PYTHON ?= python3
+
+WEB_FLAGS := \
+	-s USE_GLFW=3 \
+	-s USE_WEBGL2=1 \
+	-s FULL_ES3=1 \
+	-s WASM=1 \
+	-s NO_EXIT_RUNTIME=1 \
+	-s STACK_SIZE=8388608 \
+	-s ALLOW_MEMORY_GROWTH \
+	-s FORCE_FILESYSTEM=1 \
+	-s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' \
+	--preload-file assets@/assets \
+	--preload-file maps@/maps
+
+COMMON_SRCS := parser/fn_parser.c parser/fn_parser_dir_util.c \
+	parser/fn_parser_identifiers.c parser/fn_parser_start.c \
+	parser/fn_parser_color_util.c parser/fn_parser_file.c parser/fn_parser_map.c \
+	main.c parser/fn_parser_map_prapare.c parser/fn_parser_map_util.c \
+	parser/fn_parser_map_wall_check.c parser/fn_parser_free.c \
+	parser/fn_parser_file_utils.c error/fn_error_message.c \
+	game/fn_game_collision.c game/fn_game_crosshair.c game/fn_game_draw.c \
+	game/fn_game_floor_draw.c game/fn_game_floor_utils.c game/fn_game_init.c \
+	game/fn_game_input.c game/fn_game_jump.c game/fn_game_loop.c \
+	game/fn_game_move.c game/fn_game_post.c game/fn_game_ray.c \
+	game/fn_game_render.c game/fn_game_rotate.c game/fn_game_shade.c \
+	game/fn_game.c game/fn_game_time.c game/fn_game_free.c \
+	game/fn_game_texture.c game/fn_game_settings.c \
+	game/fn_game_wall_draw.c game/fn_game_wall_loop.c
+
+BONUS_SRCS := bonus/fn_build_mode.c bonus/fn_game_bonus_doors.c \
+	bonus/fn_game_bonus_init.c bonus/fn_game_bonus_keys.c \
+	bonus/fn_game_bonus_minimap_render.c \
+	bonus/fn_game_bonus_minimap_utils.c bonus/fn_game_bonus_minimap_fov.c \
+	bonus/fn_game_bonus_render.c bonus/fn_game_bonus_sprite_data.c \
+	bonus/fn_game_bonus_sprite_draw.c bonus/fn_game_bonus_sprite_render.c \
+	bonus/fn_game_bonus_sprite_stripe.c
+
+WEB_SRCS := $(COMMON_SRCS) $(BONUS_SRCS)
+OBJS := $(WEB_SRCS:%.c=$(OBJ_DIR)/%.o)
+
+all: $(WEB_DIR)/$(NAME_WEB)
+
+$(MLX42):
+>$(EMCMAKE) cmake $(LIBMLX) -B $(MLX42_BUILD)
+>$(MAKE) -C $(MLX42_BUILD) -j4
+
+libft:
+>$(MAKE) -s -C $(LIBFT_DIR) CC=$(CC) OBJDIR=$(LIBFT_OBJDIR) NAME=$(LIBFT_NAME)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+>mkdir -p $(dir $@)
+>$(CC) $(CFLAGS) -o $@ -c $< $(HEADERS)
+
+$(WEB_DIR)/coi-serviceworker.js: $(LIBMLX)/web/coi-serviceworker.js
+>mkdir -p $(WEB_DIR)
+>cp $< $@
+
+$(WEB_DIR)/$(NAME_WEB): $(MLX42) libft $(OBJS) $(WEB_DIR)/coi-serviceworker.js
+>mkdir -p $(WEB_DIR)
+>$(CC) $(OBJS) $(LIBFT) $(MLX42) $(WEB_FLAGS) $(HEADERS) -o $(WEB_DIR)/$(NAME_WEB)
+
+serve: all
+>cd $(WEB_DIR) && $(PYTHON) -m http.server 8000
+
+clean:
+>$(MAKE) -s -C $(LIBFT_DIR) clean OBJDIR=$(LIBFT_OBJDIR)
+>rm -rf $(MLX42_BUILD)
+>rm -rf $(OBJ_DIR)
+
+fclean: clean
+>rm -f $(LIBFT)
+>rm -f $(WEB_DIR)/$(NAME_WEB) $(WEB_DIR)/cub3d.wasm $(WEB_DIR)/cub3d.data
+>rm -f $(WEB_DIR)/coi-serviceworker.js
+
+re: fclean all
+
+.PHONY: all clean fclean re libft serve

@@ -1,0 +1,17 @@
+# Native builds
+cub3D
+cub3D_bonus
+obj/
+obj_bonus/
+include/MLX42/build/
+include/libft/objects/
+include/libft/libft.a
+
+# Web builds
+obj_web/
+include/MLX42/build_web/
+include/libft/objects_web/
+include/libft/libft_web.a
+
+# Local deploy scratch
+deploy/
