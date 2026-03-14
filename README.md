@@ -1,6 +1,6 @@
-# BunnyHoppy (Cub3D)
+# Cub3D
 
-BunnyHoppy is a Cub3D-based first-person game written in C using MLX42.
+Cub3d is a first-person game written in C using MLX42.
 The project focuses on ray casting, map parsing, movement/collision, and
 bonus gameplay systems implemented in a clean modular structure.
 
@@ -10,7 +10,7 @@ bonus gameplay systems implemented in a clean modular structure.
 - Strict `.cub` parser and map validation
 - Textured walls (XPM42 assets)
 - Player movement, jump, and collision handling
-- Bonus systems: keys, doors, minimap, sprites, checkpoints, lava
+- Bonus systems: keys, doors, minimap, sprites.
 
 ## Controls
 
