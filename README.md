@@ -1,6 +1,6 @@
-# Cub3D
+# cub3D
 
-Cub3d is a first-person game written in C using MLX42.
+cub3d is a first-person game written in C using MLX42.
 The project focuses on ray casting, map parsing, movement/collision, and
 bonus gameplay systems implemented in a clean modular structure.
 
